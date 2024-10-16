@@ -1,59 +1,48 @@
 # Performance Optimized API
 
-This project demonstrates an API optimized for high performance using techniques like Dapper for faster data access, caching strategies (Redis), and efficient query handling with both Entity Framework (EF) and Dapper. It also explores various performance improvement strategies for APIs.
+This project demonstrates an API optimized for high performance using techniques like Dapper for faster data access, caching strategies (Redis, In-Memory), and efficient query handling with both Entity Framework (EF) and Dapper. It also explores various performance improvement strategies for APIs.
 
-## Features
+## Key Features
 
-- **Dapper for High-Performance Read Queries**: Leveraging Dapper to optimize complex data retrieval operations.
-- **Entity Framework (EF) for Data Manipulation**: EF is used for handling create, update, and delete operations.
-- **Redis Caching**: Utilizes Redis to cache frequently accessed data and minimize database load.
-- **Asynchronous Programming**: Ensures all data access and processing are handled asynchronously for better scalability.
-- **Benchmarking**: Comparing performance between EF and Dapper for complex queries.
-- **Paginated Data Retrieval**: Supports efficient data retrieval with pagination.
+1. **Efficient Data Access**
+   - Entity Framework Core for complex queries
+   - Dapper for optimized read operations
+   - Asynchronous programming for improved responsiveness
 
-## Technologies
+2. **Caching Strategies**
+   - In-Memory caching for frequently accessed data
+   - Distributed caching with Redis for scalability
 
-- ASP.NET Core Web API
-- Entity Framework Core
-- Dapper
-- Redis
-- AutoMapper
-- PostgreSQL (or SQL Server)
-- Bogus (for seeding data)
-  
-## Installation
+3. **Performance Optimizations**
+   - Pagination for large data sets
+   - Sorting capabilities
+   - AsNoTracking for read-only queries
 
-1. Clone the repository:
+4. **Clean Architecture**
+   - Repository pattern
+   - Separation of concerns
+   - Dependency Injection
 
-```bash
-git clone https://github.com/your-username/performance_optimized_API.git
-```
+5. **Data Mapping**
+   - AutoMapper for object-to-object mapping
 
-2. Navigate to the project directory:
+6. **Data Seeding**
+   - Bogus library for generating realistic test data
 
-```bash
-cd performance_optimized_API
-```
+## Getting Started
 
-3. Restore NuGet packages:
+1. Clone the repository
+2. Ensure you have .NET Core SDK installed
+3. Set up your database connection string in `appsettings.json`
+4. Run `dotnet ef database update` to create the database
+5. Run `dotnet run` to start the application
 
-```bash
-dotnet restore
-```
+## Configuration
 
-4. Update the database connection string in `appsettings.json`:
-
-```json
-"ConnectionStrings": {
-    "PrimaryDbConnection": "Your-Database-Connection-String"
-}
-```
-
-5. Run the application:
-
-```bash
-dotnet run
-```
+- Database: PostgreSQL
+- Caching: Redis (ensure Redis server is running)
+- ORM: Entity Framework Core
+- Micro-ORM: Dapper
 
 ## Usage
 

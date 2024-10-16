@@ -14,17 +14,20 @@ namespace Performance_Optimized.Core.Services
         private readonly IPurchaseRepository _purchaseRepository;
         private readonly IPurchaseDetailRepository _purchaseDetailRepository;
         private readonly IMapper _mapper;
+        private readonly ICacheServiceFactory _cacheServiceFactory;
 
         public PurchaseService(
             IProductRepository productRepository,
             IPurchaseRepository purchaseRepository,
             IPurchaseDetailRepository purchaseDetailRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ICacheServiceFactory cacheServiceFactory)
         {
             _productRepository = productRepository;
             _purchaseRepository = purchaseRepository;
             _purchaseDetailRepository = purchaseDetailRepository;
             _mapper = mapper;
+            _cacheServiceFactory = cacheServiceFactory;
         }
 
         public async Task<PaginatedDataViewModel<PurchaseViewModel>> Get(int pageNumber, int pageSize, string sortBy, string sortOrder, CancellationToken cancellationToken)
@@ -44,7 +47,23 @@ namespace Performance_Optimized.Core.Services
 
         public async Task<IEnumerable<PurchaseViewModel>> GetPurchasesByCustomer(int customerId)
         {
-            return await _purchaseRepository.GetPurchasesByCustomer(customerId);
+            var cacheKey = $"PurchasesByCustomer_{customerId}";
+            var _cacheService = _cacheServiceFactory.GetCacheService(CacheType.Redis);
+            var cachedData = await _cacheService.GetAsync<IEnumerable<PurchaseViewModel>>(cacheKey);
+
+            if (cachedData != null)
+                return cachedData;
+
+            var purchaseViewModel = await _purchaseRepository.GetPurchasesByCustomer(customerId);
+
+            if (purchaseViewModel == null)
+            {
+                throw new NotFoundException("No data found");
+            }
+
+            await _cacheService.SetAsync(cacheKey, purchaseViewModel, TimeSpan.FromMinutes(30));
+
+            return purchaseViewModel;
         }
 
         public async Task<PurchaseViewModel> Create(PurchaseCreateViewModel model, CancellationToken cancellationToken)

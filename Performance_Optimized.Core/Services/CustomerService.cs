@@ -11,11 +11,15 @@ namespace Performance_Optimized.Core.Services
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
+        private readonly ICacheServiceFactory _cacheServiceFactory;
 
-        public CustomerService(ICustomerRepository customerRepository, IMapper mapper)
+        public CustomerService(ICustomerRepository customerRepository,
+            IMapper mapper,
+            ICacheServiceFactory cacheServiceFactory)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
+            _cacheServiceFactory = cacheServiceFactory;
         }
 
         public async Task<PaginatedDataViewModel<CustomerViewModel>> Get(int pageNumber, int pageSize, string sortBy, string sortOrder, CancellationToken cancellationToken)
@@ -71,8 +75,29 @@ namespace Performance_Optimized.Core.Services
 
         public async Task<CustomerViewModel> GetCustomerWithPurchases(int customerId, CancellationToken cancellationToken)
         {
+            var cacheKey = $"Customer_{customerId}";
+            var _cacheService = _cacheServiceFactory.GetCacheService(CacheType.Memory);
+
+            // Check if data is in cache
+            var cachedCustomer = await _cacheService.GetAsync<CustomerViewModel>(cacheKey);
+            if (cachedCustomer != null)
+            {
+                return cachedCustomer;
+            }
+
+            // If not in cache, retrieve from repository
             var customer = await _customerRepository.GetCustomerWithPurchases(customerId, cancellationToken);
-            return customer;
+            if (customer == null)
+            {
+                throw new NotFoundException("Customer not found");
+            }
+
+            var customerViewModel = _mapper.Map<CustomerViewModel>(customer);
+
+            // Store result in cache for future requests
+            await _cacheService.SetAsync(cacheKey, customerViewModel, TimeSpan.FromMinutes(30));
+
+            return customerViewModel;
         }
     }
 

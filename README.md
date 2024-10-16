@@ -50,10 +50,6 @@ This project demonstrates an API optimized for high performance using techniques
 2. Use the API endpoints to test CRUD operations and observe the performance difference between EF and Dapper.
 3. Monitor Redis for cache hits and database access reduction.
 
-## License
-
-This project is licensed under the MIT License.
-
 ## Authors
 
 If you have any questions or need further assistance, please contact the project author at [@kawser2133](https://www.github.com/kawser2133) || [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kawser2133)
